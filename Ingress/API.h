@@ -33,7 +33,6 @@ typedef void (^SoundCompletionBlock)(void);
 }
 
 @property (nonatomic, strong) NSOperationQueue *networkQueue;
-@property (nonatomic, strong) NSString *xsrfToken;
 @property (nonatomic, strong) NSString *SACSID;
 @property (nonatomic, strong) NSMutableArray *energyToCollect;
 @property (nonatomic, readonly) long long currentTimestamp;

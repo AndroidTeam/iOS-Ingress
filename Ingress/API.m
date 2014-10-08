@@ -30,7 +30,6 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 }
 
 @synthesize networkQueue = _networkQueue;
-@synthesize xsrfToken = _xsrfToken;
 @synthesize SACSID = _SACSID;
 @synthesize energyToCollect = _energyToCollect;
 @synthesize currentTimestamp = _currentTimestamp;
@@ -449,9 +448,6 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 			});
 			return;
 		}
-		
-		self.xsrfToken = jsonObject[@"result"][@"xsrfToken"];
-		//NSLog(@"xsrfToken: %@", self.xsrfToken);
 		
 		if ([jsonObject[@"result"][@"playerEntity"][2][@"playerPersonal"][@"allowNicknameEdit"] boolValue]) {
 			dispatch_async(dispatch_get_main_queue(), ^{
@@ -1522,7 +1518,6 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 		@"Content-Type" : @"application/json;charset=UTF-8",
 		@"Accept-Encoding" : @"gzip",
 		@"User-Agent" : @"Nemesis (gzip)",
-		@"X-XsrfToken" : ((self.xsrfToken) ? (self.xsrfToken) : @""),
 		@"Host" : @"m-dot-betaspike.appspot.com",
 		@"Connection" : @"Keep-Alive",
 		@"Cookie" : [NSString stringWithFormat:@"SACSID=%@", ((self.SACSID) ? (self.SACSID) : @"")],
