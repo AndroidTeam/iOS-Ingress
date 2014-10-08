@@ -37,7 +37,7 @@ Support
 
 If you enjoy this software, please consider making a small donation to help with maintenance and improvements to the app.
 
-[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6HKVU78GCECL2&lc=US&item_name=iOS%20Ingress&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+[![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=buddyfavors%40gmail%2ecom&lc=US&item_name=iOS%20Ingress&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHostedGuest)
 
 [![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/thing/1350940/iOS-Ingress)
 
