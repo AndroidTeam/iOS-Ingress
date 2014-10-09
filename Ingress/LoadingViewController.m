@@ -207,7 +207,7 @@
 	NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 	NSString *escapedString = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef) jsonString, NULL, (CFStringRef)@"!*'();:@&=+$,/?%#[]", kCFStringEncodingUTF8));
 
-	handshakeURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://m-dot-betaspike.appspot.com/handshake?json=%@", escapedString]];
+	handshakeURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://50-90-234-33.res.bhn.net:3000/handshake?json=%@", escapedString]];
 	loginProcess = NO;
 
 	_webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
