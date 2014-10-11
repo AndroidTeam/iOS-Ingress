@@ -662,7 +662,7 @@
 #pragma mark - Update
 
 - (void)validateLocationServicesAuthorization {
-	if ([CLLocationManager authorizationStatus] != kCLAuthorizationStatusAuthorized) {
+	if (![CLLocationManager locationServicesEnabled]) {
 		if (!locationAllowHUD) {
 			_mapView.hidden = YES;
 			playerArrowImage.hidden = YES;
@@ -748,6 +748,11 @@
     #define INGRESS_SCANNER_BEARING_ANIMATION_DURATION 0.2
     
     if (!playerArrowImage.layer.animationKeys.count) {
+        if (firstLocationUpdate) {
+            firstLocationUpdate = NO;
+            [self refresh];
+        }
+        
         [UIView animateWithDuration:INGRESS_SCANNER_BEARING_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             CGAffineTransform transform = CGAffineTransformMakeRotation(GLKMathDegreesToRadians(newHeading.trueHeading));
             playerArrowImage.transform = transform;
@@ -867,22 +872,9 @@
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
 
-	if (mapView.zoomLevel < 15) {
-		if ([Utilities isOS7]) {
-//            [mapView setCenterCoordinate:mapView.centerCoordinate zoomLevel:15 animated:NO];
-//#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000
-//				MKMapCamera *camera = [MKMapCamera camera];
-//				camera.centerCoordinate = mapView.centerCoordinate;
-//				camera.heading = 0;
-//				camera.pitch = 0;
-//				camera.altitude = 50;
-//				NSLog(@"camera: %@", camera);
-//				[mapView setCamera:camera animated:NO];
-//#endif
-		} else {
-			[mapView setCenterCoordinate:mapView.centerCoordinate zoomLevel:15 animated:NO];
-		}
-		return;
+    if (mapView.zoomLevel < 15) {
+        [mapView setCenterCoordinate:mapView.centerCoordinate zoomLevel:15 animated:NO];
+        return;
     }
 
 	Player *player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
