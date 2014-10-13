@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #ifndef SCANNER_RANGE
-#define SCANNER_RANGE 40
+#define SCANNER_RANGE 100 // Roughly 50 Meters
 #endif
 
 @interface LocationManager : NSObject <CLLocationManagerDelegate> {
