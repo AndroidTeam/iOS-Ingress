@@ -10,6 +10,7 @@
 
 #import "Resonator.h"
 #import "Player.h"
+#import "RangeCircle.h"
 #import "PortalKey.h"
 #import "DeployedMod.h"
 #import "DeployedShield.h"
