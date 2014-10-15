@@ -11,7 +11,7 @@
 #import "User.h"
 
 
-@interface Player : User
+@interface Player : User <MKOverlay>
 
 @property (nonatomic) int32_t ap;
 @property (nonatomic) int16_t energy;
@@ -22,9 +22,13 @@
 @property (nonatomic) BOOL allowFactionChoice;
 @property (nonatomic) BOOL shouldPushNotifyForAtPlayer;
 @property (nonatomic) BOOL shouldPushNotifyForPortalAttacks;
+@property (nonatomic) CLLocationDegrees latitude;
+@property (nonatomic) CLLocationDegrees longitude;
 
 @property (nonatomic, readonly) int level;
 @property (nonatomic, readonly) int maxEnergy;
 @property (nonatomic, readonly) int nextLevelAP;
+
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @end
