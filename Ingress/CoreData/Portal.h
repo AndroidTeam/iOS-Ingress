@@ -31,7 +31,7 @@
 @property (nonatomic, retain) NSSet *vertexForControlFields;
 
 @property (nonatomic, readonly) NSInteger level;
-@property (nonatomic, readonly) NSInteger range;
+@property (nonatomic, readonly) CLLocationDistance range;
 @property (nonatomic, readonly) float energy;
 
 @property (nonatomic, readonly) MKMapRect boundingMapRect;

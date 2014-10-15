@@ -45,7 +45,7 @@
 }
 
 - (BOOL)isInPlayerRange {
-	return [self distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate] <= SCANNER_RANGE;
+	return self.range <= SCANNER_RANGE;
 }
 
 - (NSString *)title {
@@ -79,8 +79,8 @@
 	}
 }
 
-- (NSInteger)range {
-	return 160 * (powf([self averageResonatorLevel], 4));
+- (CLLocationDistance)range {
+    return [self distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate];
 }
 
 - (float)energy {
