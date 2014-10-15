@@ -8,7 +8,9 @@
 
 #import "LocationManager.h"
 
-@implementation LocationManager
+@implementation LocationManager {
+    Player *player;
+}
 
 #pragma mark - Singleton implementation
 
@@ -24,7 +26,7 @@
 - (id)init {
     self = [super init];
     if (self) {
-        
+        player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
         _delegates = [NSMutableArray array];
         
         _locationManager = [[CLLocationManager alloc] init];
@@ -44,9 +46,8 @@
 #pragma mark - 
 
 - (CLLocation *)playerLocation {
-    CLLocationCoordinate2D coordinate = [AppDelegate instance].mapView.centerCoordinate;
+    CLLocationCoordinate2D coordinate = player.coordinate;
     return [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
-//    return _locationManager.location;
 }
 
 - (void)addDelegate:(id)delegate {
