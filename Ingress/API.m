@@ -1815,8 +1815,9 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 
 			User *creator = [User MR_findFirstByAttribute:@"guid" withValue:gameEntity[2][@"captured"][@"capturingPlayerId"] inContext:context];
 			if (!creator) {
-				creator = [User MR_createInContext:context];
-				creator.guid = gameEntity[2][@"captured"][@"capturingPlayerId"];
+                creator = [User MR_createInContext:context];
+                creator.guid = gameEntity[2][@"captured"][@"capturingPlayerId"];
+                creator.nickname = gameEntity[2][@"captured"][@"nickname"];
 			}
 			portal.capturedBy = creator;
 
