@@ -18,7 +18,8 @@
 - (void)viewDidLoad {
 	[super viewDidLoad];
 	
-	opsLabel.rightInset = 10;
+    opsLabel.rightInset = 10;
+    [self updateOpsLabel];
 	labelBackgroundImage.image = [[UIImage imageNamed:@"ops_background.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2, 2, 2, 236)];
 	
 	CGFloat statusBarHeight = [Utilities statusBarHeight];
@@ -167,24 +168,26 @@
 #pragma mark - CLLocationManagerDelegate protocol
 
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray *)locations {
-	
-	float yardModifier;
-	NSString *unitLabel;
-	if ([[NSUserDefaults standardUserDefaults] boolForKey:MilesOrKM]) {
-		yardModifier = 1;
-		unitLabel = @"m";
-	} else {
-		yardModifier = 1.0936133;
-		unitLabel = @"yd";
-	}
+    [self updateOpsLabel];
+}
 
-	if (_portal.isInPlayerRange) {
-		CLLocationDistance distance = [_portal distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate];
-		opsLabel.text = [NSString stringWithFormat:@"Distance: %.0f%@", distance * yardModifier, unitLabel];
-	} else {
-		opsLabel.text = @"Out of Range";
-	}
-	
+- (void)updateOpsLabel {
+    float yardModifier;
+    NSString *unitLabel;
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:MilesOrKM]) {
+        yardModifier = 1;
+        unitLabel = @"m";
+    } else {
+        yardModifier = 1.0936133;
+        unitLabel = @"yd";
+    }
+    
+    if (_portal.isInPlayerRange) {
+        CLLocationDistance distance = [_portal distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate];
+        opsLabel.text = [NSString stringWithFormat:@"Distance: %.0f%@", distance * yardModifier, unitLabel];
+    } else {
+        opsLabel.text = @"Out of Range";
+    }
 }
 
 @end
