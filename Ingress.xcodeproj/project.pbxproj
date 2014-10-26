@@ -11,6 +11,9 @@
 		0F8A05AA178C752F003DBEC0 /* Nanbo1.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 0F8A05A7178C752F003DBEC0 /* Nanbo1.gpx */; };
 		0F8A05AB178C752F003DBEC0 /* Nanbo.gpx in Resources */ = {isa = PBXBuildFile; fileRef = 0F8A05A8178C752F003DBEC0 /* Nanbo.gpx */; };
 		52BF802B177903790027BE3C /* ResonatorView.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF802A177903790027BE3C /* ResonatorView.m */; };
+		6DDFBD9419E9DD1A00BAC181 /* RangeCircle.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDFBD9319E9DD1A00BAC181 /* RangeCircle.m */; };
+		6DDFBD9A19EB25D500BAC181 /* RangeCircleOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDFBD9919EB25D500BAC181 /* RangeCircleOverlayView.m */; };
+		6DDFBD9D19ECAA3B00BAC181 /* PlayerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 6DDFBD9C19ECAA3B00BAC181 /* PlayerOverlayView.m */; };
 		FA008E19171D334700176C3D /* powerCube@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FA008E18171D334700176C3D /* powerCube@2x.png */; };
 		FA02F9D8173D54540016EE7F /* MediaWebViewViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA02F9D7173D54540016EE7F /* MediaWebViewViewController.m */; };
 		FA036DE7175681CA00E3C55B /* XCDYouTubeVideoPlayerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = FA036DE6175681CA00E3C55B /* XCDYouTubeVideoPlayerViewController.m */; };
@@ -318,6 +321,12 @@
 		0F8A05A8178C752F003DBEC0 /* Nanbo.gpx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; name = Nanbo.gpx; path = Locations/Nanbo.gpx; sourceTree = "<group>"; };
 		52BF8029177903790027BE3C /* ResonatorView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResonatorView.h; sourceTree = "<group>"; };
 		52BF802A177903790027BE3C /* ResonatorView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResonatorView.m; sourceTree = "<group>"; };
+		6DDFBD9219E9DD1A00BAC181 /* RangeCircle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeCircle.h; sourceTree = "<group>"; };
+		6DDFBD9319E9DD1A00BAC181 /* RangeCircle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RangeCircle.m; sourceTree = "<group>"; };
+		6DDFBD9819EB25D500BAC181 /* RangeCircleOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RangeCircleOverlayView.h; sourceTree = "<group>"; };
+		6DDFBD9919EB25D500BAC181 /* RangeCircleOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RangeCircleOverlayView.m; sourceTree = "<group>"; };
+		6DDFBD9B19ECAA3B00BAC181 /* PlayerOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayerOverlayView.h; sourceTree = "<group>"; };
+		6DDFBD9C19ECAA3B00BAC181 /* PlayerOverlayView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayerOverlayView.m; sourceTree = "<group>"; };
 		FA008E18171D334700176C3D /* powerCube@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "powerCube@2x.png"; sourceTree = "<group>"; };
 		FA02F9D6173D54540016EE7F /* MediaWebViewViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaWebViewViewController.h; sourceTree = "<group>"; };
 		FA02F9D7173D54540016EE7F /* MediaWebViewViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MediaWebViewViewController.m; sourceTree = "<group>"; };
@@ -1600,6 +1609,8 @@
 				FADC99001760ECCF009C497A /* Turret.m */,
 				FADC98F31760ECCF009C497A /* Mod.h */,
 				FADC98F41760ECCF009C497A /* Mod.m */,
+				6DDFBD9219E9DD1A00BAC181 /* RangeCircle.h */,
+				6DDFBD9319E9DD1A00BAC181 /* RangeCircle.m */,
 			);
 			name = NSManagedObjects;
 			sourceTree = "<group>";
@@ -1621,6 +1632,10 @@
 				FA7BCEDD16B535B0007636C8 /* MKCircle+Ingress.m */,
 				FA143F7816D526440007330F /* DeployedResonatorView.h */,
 				FA143F7916D526450007330F /* DeployedResonatorView.m */,
+				6DDFBD9819EB25D500BAC181 /* RangeCircleOverlayView.h */,
+				6DDFBD9919EB25D500BAC181 /* RangeCircleOverlayView.m */,
+				6DDFBD9B19ECAA3B00BAC181 /* PlayerOverlayView.h */,
+				6DDFBD9C19ECAA3B00BAC181 /* PlayerOverlayView.m */,
 			);
 			name = "Overlay Views";
 			sourceTree = "<group>";
@@ -2256,6 +2271,7 @@
 				FA8C24E316B3DB64000C8738 /* CustomMapView.m in Sources */,
 				FAE797CB16B4873C00A57316 /* UIImage+ColorReplace.m in Sources */,
 				FAE797DA16B49C1E00A57316 /* GLViewController.m in Sources */,
+				6DDFBD9A19EB25D500BAC181 /* RangeCircleOverlayView.m in Sources */,
 				FA7BCEDE16B535B0007636C8 /* MKCircle+Ingress.m in Sources */,
 				FACF89E116BBFD410071A03D /* GUIButton.m in Sources */,
 				FA92A0B216C2E13C00E6E3AE /* MKMapView+ZoomLevel.m in Sources */,
@@ -2264,6 +2280,7 @@
 				FAA7E4F616D7E429007EAE9A /* MediaItemsViewController.m in Sources */,
 				FA849E271797EC0800F16A7A /* Crackify.m in Sources */,
 				FAA7E4F716D7E42B007EAE9A /* PortalKeyCell.m in Sources */,
+				6DDFBD9D19ECAA3B00BAC181 /* PlayerOverlayView.m in Sources */,
 				FAF618B416DBDA6700AF0742 /* WheelActivityIndicatorView.m in Sources */,
 				FAC6BBAE171B080900AA0600 /* ResourcesViewController.m in Sources */,
 				FAC6BBB1171B0FFF00AA0600 /* ResourceCell.m in Sources */,
@@ -2303,6 +2320,7 @@
 				FAA9C45417304B6A000C2638 /* NSNumber+MagicalDataImport.m in Sources */,
 				FAA9C45517304B6A000C2638 /* NSObject+MagicalDataImport.m in Sources */,
 				FA13A5681767833400974387 /* TTScrollSlidingPagesController.m in Sources */,
+				6DDFBD9419E9DD1A00BAC181 /* RangeCircle.m in Sources */,
 				FAA9C45617304B6A000C2638 /* NSRelationshipDescription+MagicalDataImport.m in Sources */,
 				FAA9C45717304B6A000C2638 /* NSString+MagicalDataImport.m in Sources */,
 				FAA9C45817304B6A000C2638 /* NSManagedObject+MagicalAggregation.m in Sources */,
