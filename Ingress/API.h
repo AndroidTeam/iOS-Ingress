@@ -31,7 +31,8 @@ typedef void (^SoundCompletionBlock)(void);
 	SoundCompletionBlock soundCompletionHandlerBlock;
 	
 }
-
+;
+@property (nonatomic, strong) NSString *BaseUrl;
 @property (nonatomic, strong) NSOperationQueue *networkQueue;
 @property (nonatomic, strong) NSString *SACSID;
 @property (nonatomic, strong) NSMutableArray *energyToCollect;

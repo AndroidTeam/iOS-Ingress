@@ -29,6 +29,7 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 	BOOL inventoryRefreshInProgress;
 }
 
+@synthesize BaseUrl = _BaseUrl;
 @synthesize networkQueue = _networkQueue;
 @synthesize SACSID = _SACSID;
 @synthesize energyToCollect = _energyToCollect;
@@ -51,7 +52,7 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 		self.energyToCollect = [NSMutableArray array];
 		self.networkQueue = [NSOperationQueue new];
 		self.networkQueue.name = @"Network Queue";
-		
+		self.BaseUrl = @"http://localhost:3000";
 		inventoryRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:30 target:self selector:@selector(autorefreshInventory) userInfo:nil repeats:YES];
 	}
     return self;
@@ -1510,7 +1511,7 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 
 	/////////////////////////
 	
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://50-90-234-33.res.bhn.net:3000/rpc/%@", requestName]]];
+	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/rpc/%@", self.BaseUrl, requestName]]];
 	
 	[request setHTTPMethod:@"POST"];
 	
@@ -1518,7 +1519,6 @@ NSString *const BanAlertDisplayed = @"BanAlertDisplayed";
 		@"Content-Type" : @"application/json;charset=UTF-8",
 		@"Accept-Encoding" : @"gzip",
 		@"User-Agent" : @"Nemesis (gzip)",
-		@"Host" : @"50-90-234-33.res.bhn.net",
 		@"Connection" : @"Keep-Alive",
 		@"Cookie" : [NSString stringWithFormat:@"SACSID=%@", ((self.SACSID) ? (self.SACSID) : @"")],
 	};
