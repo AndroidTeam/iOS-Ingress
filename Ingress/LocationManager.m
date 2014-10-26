@@ -12,6 +12,8 @@
     Player *player;
 }
 
+@synthesize locationManager = _locationManager;
+
 #pragma mark - Singleton implementation
 
 + (instancetype)sharedInstance {
@@ -29,15 +31,15 @@
         player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
         _delegates = [NSMutableArray array];
         
-        _locationManager = [[CLLocationManager alloc] init];
-        _locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
-        if ([_locationManager respondsToSelector:@selector(activityType)]) {
-            _locationManager.activityType = CLActivityTypeFitness;
+        self.locationManager = [[CLLocationManager alloc] init];
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+        if ([self.locationManager respondsToSelector:@selector(activityType)]) {
+            self.locationManager.activityType = CLActivityTypeFitness;
         }
-        _locationManager.delegate = self;
+        self.locationManager.delegate = self;
         
-        [_locationManager startUpdatingLocation];
-        [_locationManager startUpdatingHeading];
+        [self.locationManager startUpdatingLocation];
+        [self.locationManager startUpdatingHeading];
         
     }
     return self;

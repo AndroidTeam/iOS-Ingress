@@ -13,6 +13,8 @@
 #import "NewPortalViewController.h"
 
 #import "PortalOverlayView.h"
+#import "PlayerOverlayView.h"
+#import "RangeCircleOverlayView.h"
 #import "MKPolyline+PortalLink.h"
 #import "MKPolygon+ControlField.h"
 #import "MKCircle+Ingress.h"
@@ -32,9 +34,6 @@
 
 	Portal *currentPortal;
 	Item *currentItem;
-
-	UIImageView *rangeCircleImageView;
-	UIImageView *playerArrowImage;
     
 	CLLocation *lastLocation;
 	BOOL firstRefreshProfile;
@@ -43,6 +42,8 @@
 	MBProgressHUD *locationAllowHUD;
     XMOverlay *_xmOverlay;
     XMOverlayView *_xmOverlayView;
+    Player *player;
+    RangeCircle *rangeCircle;
 
 	NSTimer *refreshTimer;
 
@@ -65,9 +66,23 @@
 	[Item MR_deleteAllMatchingPredicate:[NSPredicate predicateWithFormat:@"dropped = YES"]];
 	[EnergyGlob MR_truncateAll];
 	[DeployedResonator MR_truncateAll];
-	[DeployedMod MR_truncateAll];
-
-	mapGuids = [NSMutableSet set];
+    [DeployedMod MR_truncateAll];
+    
+    mapGuids = [NSMutableSet set];
+    
+    player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    player.latitude = 40.4248469;
+    player.longitude = -86.9145297;
+    rangeCircle = [RangeCircle MR_createInContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    rangeCircle.latitude = player.latitude;
+    rangeCircle.longitude = player.longitude;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [_mapView addOverlay:player];
+        [_mapView addOverlay:rangeCircle];
+    });
+    
+    CLLocationCoordinate2D coord = CLLocationCoordinate2DMake(player.latitude, player.longitude);
+    [_mapView setCenterCoordinate:coord zoomLevel:16 animated:YES];
 
 	[[AppDelegate instance] setMapView:_mapView];
 
@@ -102,11 +117,6 @@
 	[self updateCommViewControllerFrame];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(statusBarFrameDidChange:) name:UIApplicationDidChangeStatusBarFrameNotification object:nil];
 	[self addChildViewController:commVC];
-	
-	playerArrowImage = [UIImageView new];
-	playerArrowImage.frame = CGRectMake(0, 0, 50, 50);
-	playerArrowImage.center = _mapView.center;
-	[self.view insertSubview:playerArrowImage belowSubview:commVC.view];
 	
 //	locationManager = [LocationManager locationManager];
 //    locationManager.delegate = self;
@@ -187,7 +197,7 @@
                 
                 NSMutableArray *itemsToCollect = [NSMutableArray array];
                 for (Item *droppedItem in [Item MR_findAllWithPredicate:[NSPredicate predicateWithFormat:@"dropped = YES"]]) {
-                    if ([droppedItem distanceFromCoordinate:_mapView.centerCoordinate] <= SCANNER_RANGE) {
+                    if ([droppedItem distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate] <= SCANNER_RANGE) {
                         [itemsToCollect addObject:droppedItem];
                     }
                 }
@@ -290,8 +300,7 @@
 //	transform = CATransform3DScale(transform, 2, 2, 2);
 //	layer.transform = transform;
 //	layer.shouldRasterize = YES;
-
-	Player *player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
+    
 	if (player.allowFactionChoice) {
 		[self performSegueWithIdentifier:@"FactionChooseSegue" sender:self];
 	}
@@ -342,7 +351,9 @@
 		[overlays removeObject:_xmOverlay];
 		[_mapView removeOverlays:overlays];
 
-		[context performBlock:^{
+        [context performBlock:^{
+            [_mapView addOverlay:player];
+            [_mapView addOverlay:rangeCircle];
 
 			NSArray *fetchedFields = [ControlField MR_findAllInContext:context];
 			for (ControlField *controlField in fetchedFields) {
@@ -443,9 +454,6 @@
 }
 
 - (void)refreshProfile {
-
-	Player *player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-
 	int ap = player.ap;
 	int level = player.level;
 	int maxAp = player.nextLevelAP;
@@ -471,12 +479,13 @@
 
 	if ([player.team isEqualToString:@"RESISTANCE"]) {
 		[xmIndicator setProgressImage:[[UIImage imageNamed:@"progressImage-resistance.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(7, 7, 7, 7)]];
-		[playerArrowImage setImage:[UIImage imageNamed:@"playerArrow_resistance.png"]];
+		self.playerImage = [UIImage imageNamed:@"playerArrow_resistance.png"];
 	} else {
 		[xmIndicator setProgressImage:[[UIImage imageNamed:@"progressImage-aliens.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(7, 7, 7, 7)]];
-		[playerArrowImage setImage:[UIImage imageNamed:@"playerArrow_aliens.png"]];
+		self.playerImage = [UIImage imageNamed:@"playerArrow_aliens.png"];
 	}
-
+    
+    self.rangeCircleImage = [UIImage imageNamed:@"compass_ring.png"];
 	[xmIndicator setProgress:(energy/maxEnergy) animated:!firstRefreshProfile];
 
 	firstRefreshProfile = NO;
@@ -665,7 +674,6 @@
 	if (![CLLocationManager locationServicesEnabled]) {
 		if (!locationAllowHUD) {
 			_mapView.hidden = YES;
-			playerArrowImage.hidden = YES;
 			locationAllowHUD = [[MBProgressHUD alloc] initWithView:self.view];
 			locationAllowHUD.userInteractionEnabled = NO;
 			locationAllowHUD.mode = MBProgressHUDModeCustomView;
@@ -684,41 +692,8 @@
 		if (locationAllowHUD) {
 			[locationAllowHUD hide:YES];
 			_mapView.hidden = NO;
-			playerArrowImage.hidden = NO;
 		}
 	}
-    
-    [self updateRangeCircleView];
-}
-
-- (void)updateRangeCircleView {
-    
-    // Create view on first update
-    if (!rangeCircleImageView) {
-		rangeCircleImageView = [UIImageView new];
-        rangeCircleImageView.image = [UIImage imageNamed:@"compass_ring.png"];
-        rangeCircleImageView.opaque = NO;
-        rangeCircleImageView.userInteractionEnabled = NO;
-        rangeCircleImageView.clipsToBounds = YES;
-        [self.view addSubview:rangeCircleImageView];
-    }
-    
-    // Hide view while no sensible data can be shown
-    if (locationAllowHUD) {
-        rangeCircleImageView.hidden = YES;
-        return;
-    }
-
-	if (_mapView.bounds.size.width > 0 && _mapView.region.span.latitudeDelta > 0) {
-		MKMapRect mRect = _mapView.visibleMapRect;
-		MKMapPoint eastMapPoint = MKMapPointMake(MKMapRectGetMinX(mRect), MKMapRectGetMidY(mRect));
-		MKMapPoint westMapPoint = MKMapPointMake(MKMapRectGetMaxX(mRect), MKMapRectGetMidY(mRect));
-		CLLocationDistance altDistance = MKMetersBetweenMapPoints(eastMapPoint, westMapPoint);
-		CGFloat width = ((_mapView.frame.size.width * SCANNER_RANGE) / altDistance)*2;
-		rangeCircleImageView.frame = CGRectMake(0, 0, width, width);
-		rangeCircleImageView.center = _mapView.center;
-	}
-
 }
 
 #pragma mark - CLLocationManagerDelegate
@@ -747,18 +722,12 @@
     
     #define INGRESS_SCANNER_BEARING_ANIMATION_DURATION 0.2
     
-    if (!playerArrowImage.layer.animationKeys.count) {
-        if (firstLocationUpdate) {
-            firstLocationUpdate = NO;
-            [self refresh];
-        }
-        
-        [UIView animateWithDuration:INGRESS_SCANNER_BEARING_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-            CGAffineTransform transform = CGAffineTransformMakeRotation(GLKMathDegreesToRadians(newHeading.trueHeading));
-            playerArrowImage.transform = transform;
-			playerArrowImage.center = _mapView.center;
-        } completion:nil];
-    }
+    [UIView animateWithDuration:INGRESS_SCANNER_BEARING_ANIMATION_DURATION delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
+        /*CGAffineTransform transform = CGAffineTransformMakeRotation(GLKMathDegreesToRadians(newHeading.trueHeading));
+        CIImage *coreImage = self.playerImage.CIImage;
+        [coreImage imageByApplyingTransform:transform];
+        self.playerImage = [UIImage imageWithCIImage:coreImage];*/
+    } completion:nil];
 }
 
 #pragma mark - UIActionSheetDelegate
@@ -871,14 +840,6 @@
 #pragma mark - MKMapViewDelegate
 
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated {
-
-    if (mapView.zoomLevel < 15) {
-        [mapView setCenterCoordinate:mapView.centerCoordinate zoomLevel:15 animated:NO];
-        return;
-    }
-
-	Player *player = [[API sharedInstance] playerForContext:[NSManagedObjectContext MR_contextForCurrentThread]];
-
 	int energy = player.energy;
 	int maxEnergy = player.maxEnergy;
 	int collecting = 0;
@@ -886,7 +847,7 @@
 	if (energy < maxEnergy) {
 		[[[API sharedInstance] energyToCollect] removeAllObjects];
 		for (EnergyGlob *xm in [EnergyGlob MR_findAll]) {
-			if ([xm distanceFromCoordinate:_mapView.centerCoordinate] <= SCANNER_RANGE) {
+			if ([xm distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate] <= SCANNER_RANGE) {
 				[[[API sharedInstance] energyToCollect] addObject:xm];
 				collecting += xm.amount;
 			}
@@ -896,15 +857,13 @@
 		}
 		//NSLog(@"Collecting %d (%d) XM", [[[API sharedInstance] energyToCollect] count], collecting);
 	}
-
-	CLLocation *mapLocation = [[CLLocation alloc] initWithLatitude:_mapView.centerCoordinate.latitude longitude:_mapView.centerCoordinate.longitude];
+    
+	CLLocation *mapLocation = [[CLLocation alloc] initWithLatitude:[LocationManager sharedInstance].playerLocation.coordinate.latitude longitude:[LocationManager sharedInstance].playerLocation.coordinate.longitude];
 	CLLocationDistance meters = [mapLocation distanceFromLocation:lastLocation];
 	if (meters == -1 || meters >= 10 || isnan(meters)) {
 		lastLocation = mapLocation;
 		[self refresh];
 	}
-
-    [self updateRangeCircleView];
 }
 
 - (void)mapViewDidFinishLoadingMap:(MKMapView *)mapView {
@@ -912,11 +871,11 @@
 }
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view {
-	[_mapView deselectAnnotation:view.annotation animated:NO];
-	if ([view.annotation isKindOfClass:[Portal class]]) {
+    if ([view.annotation isKindOfClass:[Portal class]]) {
+        [_mapView deselectAnnotation:view.annotation animated:NO];
 		currentPortal = (Portal *)view.annotation;
 		if (self.virusToUse) {
-			if ([currentPortal distanceFromCoordinate:_mapView.centerCoordinate] <= SCANNER_RANGE) {
+			if ([currentPortal distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate] <= SCANNER_RANGE) {
 				if ([[NSUserDefaults standardUserDefaults] boolForKey:DeviceSoundToggleEffects]) {
 					[[SoundManager sharedManager] playSound:@"Sound/sfx_ui_success.aif"];
 				}
@@ -928,8 +887,9 @@
 		} else {
 			[self performSegueWithIdentifier:@"PortalDetailSegue" sender:self];
 		}
-	} else if ([view.annotation isKindOfClass:[Item class]]) {
-		if ([(Item *)(view.annotation) distanceFromCoordinate:_mapView.centerCoordinate] <= SCANNER_RANGE) {
+    } else if ([view.annotation isKindOfClass:[Item class]]) {
+        [_mapView deselectAnnotation:view.annotation animated:NO];
+		if ([(Item *)(view.annotation) distanceFromCoordinate:[LocationManager sharedInstance].playerLocation.coordinate] <= SCANNER_RANGE) {
             if ([[NSUserDefaults standardUserDefaults] boolForKey:DeviceSoundToggleEffects]) {
                 [[SoundManager sharedManager] playSound:@"Sound/sfx_ui_success.aif"];
             }
@@ -939,36 +899,35 @@
 			actionSheet.tag = 1;
 			[actionSheet showInView:self.view.window];
 		}
-	}
+    }
 }
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id <MKAnnotation>)annotation {
 	
-	if ([annotation isKindOfClass:[Portal class]]) {
+    if ([annotation isKindOfClass:[Portal class]]) {
+        
+        static NSString *portalAnnotationView = @"portalAnnotationView";
+        
+        MKAnnotationView *annotationView = [_mapView dequeueReusableAnnotationViewWithIdentifier:portalAnnotationView];
+        if (annotationView == nil) {
+            annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:portalAnnotationView];
+            annotationView.canShowCallout = NO;
+        }
+        
+        annotationView.annotation = annotation;
+        
+        Portal *portal = (Portal *)annotation;
+        annotationView.image = [Utilities iconForPortal:portal];
+        
+        return annotationView;
+        
+    } else if ([annotation isKindOfClass:[Item class]]) {
 		
-		static NSString *AnnotationViewID = @"portalAnnotationView";
+		static NSString *itemAnnotationView = @"itemAnnotationView";
 		
-		MKAnnotationView *annotationView = /*(PortalAnnotationView *)*/[_mapView dequeueReusableAnnotationViewWithIdentifier:AnnotationViewID];
+		MKPinAnnotationView *annotationView = (MKPinAnnotationView *)[_mapView dequeueReusableAnnotationViewWithIdentifier:itemAnnotationView];
 		if (annotationView == nil) {
-			annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:AnnotationViewID];
-			annotationView.canShowCallout = NO;
-		}
-		
-		annotationView.annotation = annotation;
-		
-		Portal *portal = (Portal *)annotation;
-		annotationView.image = [Utilities iconForPortal:portal];
-		//annotationView.alpha = 0;
-
-		return annotationView;
-	
-	} else if ([annotation isKindOfClass:[Item class]]) {
-		
-		static NSString *AnnotationViewID = @"itemAnnotationView";
-		
-		MKPinAnnotationView *annotationView = (MKPinAnnotationView *)[_mapView dequeueReusableAnnotationViewWithIdentifier:AnnotationViewID];
-		if (annotationView == nil) {
-			annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:AnnotationViewID];
+			annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:itemAnnotationView];
 			annotationView.canShowCallout = NO;
 			annotationView.pinColor = MKPinAnnotationColorPurple;
 		}
@@ -984,10 +943,16 @@
 }
 
 - (MKOverlayView *)mapView:(MKMapView *)mapView viewForOverlay:(id<MKOverlay>)overlay {
-	if ([overlay isKindOfClass:[Portal class]]) {
-		PortalOverlayView *overlayView = [[PortalOverlayView alloc] initWithOverlay:overlay];
-		return overlayView;
-	} else if ([overlay isKindOfClass:[MKPolyline class]]) {
+    if ([overlay isKindOfClass:[Portal class]]) {
+        PortalOverlayView *overlayView = [[PortalOverlayView alloc] initWithOverlay:overlay];
+        return overlayView;
+    } else if ([overlay isKindOfClass:[RangeCircle class]]) {
+        RangeCircleOverlayView *overlayView = [[RangeCircleOverlayView alloc] initWithOverlay:overlay];
+        return overlayView;
+    } else if ([overlay isKindOfClass:[Player class]]) {
+        PlayerOverlayView *overlayView = [[PlayerOverlayView alloc] initWithOverlay:overlay];
+        return overlayView;
+    } else if ([overlay isKindOfClass:[MKPolyline class]]) {
 		MKPolyline *polyline = (MKPolyline *)overlay;
 		MKPolylineView *polylineView = [[MKPolylineView alloc] initWithPolyline:polyline];
 		polylineView.strokeColor = [Utilities colorForFaction:polyline.portalLink.controllingTeam];
@@ -1039,22 +1004,40 @@
     double londelta = originalRegion.span.longitudeDelta / recognizer.scale;
     MKCoordinateSpan span = MKCoordinateSpanMake(latdelta, londelta);
 	MKCoordinateRegion region = MKCoordinateRegionMake(originalRegion.center, span);
-
-	if ([Utilities isOS7] || [self zoomLevelForRegion:region] >= 15) {
-		[_mapView setRegion:region animated:NO];
-	}
+    int zoomLevel = [self zoomLevelForRegion:region];
+    NSLog(@"Zoom Level: %d", zoomLevel);
     
+	if ([Utilities isOS7] || zoomLevel >= 16 || true) {
+        [_mapView setRegion:region animated:NO];
+    }
+}
+
+//@property(readonly, nonatomic) CLLocationDirection trueHeading;
+
+- (CLLocationDirection)trueHeading {
+    return 0;
 }
 
 - (void)mapTapped:(UITapGestureRecognizer *)recognizer {
-
-	if (_mapView.scrollEnabled) {
+    
+    CGPoint point = [recognizer locationInView:_mapView];
+    CLLocationCoordinate2D coordinate = [_mapView convertPoint:point toCoordinateFromView:_mapView];
+    //CLLocationDistance distance = [portal distanceFromCoordinate:coordinate];
+    CLLocationCoordinate2D centerCoord = [LocationManager sharedInstance].playerLocation.coordinate;
+    CLLocation *loc1 = [[CLLocation alloc] initWithLatitude:centerCoord.latitude longitude:centerCoord.longitude];
+    CLLocation *loc2 = [[CLLocation alloc] initWithLatitude:coordinate.latitude longitude:coordinate.longitude];
+    CLLocationDistance distance = [loc1 distanceFromLocation:loc2];
+    NSLog(@"Distance: %f", distance);
+    
+    [self locationManager:[LocationManager sharedInstance].locationManager didUpdateHeading:(CLHeading *)self];
+    
+	/*if (_mapView.scrollEnabled) {
         [[LocationManager sharedInstance] addDelegate:self];
 		[_mapView setScrollEnabled:NO];
 	} else {
         [[LocationManager sharedInstance] removeDelegate:self];
 		[_mapView setScrollEnabled:YES];
-	}
+	}*/
 
 //	MKMapView *mapView = (MKMapView *)recognizer.view;
 //	id<MKOverlay> tappedOverlay = nil;

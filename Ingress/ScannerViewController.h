@@ -43,6 +43,9 @@
 	
 }
 
+@property(readonly, nonatomic) CLLocationDirection trueHeading;
+@property (strong, nonatomic) UIImage *playerImage;
+@property (strong, nonatomic) UIImage *rangeCircleImage;
 @property (strong, nonatomic) UIImage *alienPortalImage;
 @property (strong, nonatomic) UIImage *resistancePortalImage;
 @property (strong, nonatomic) UIImage *neutralPortalImage;

@@ -14,9 +14,9 @@
 
 @interface LocationManager : NSObject <CLLocationManagerDelegate> {
     NSMutableArray *_delegates;
-    CLLocationManager *_locationManager;
 }
 
+@property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, readonly) CLLocation *playerLocation;
 
 + (instancetype)sharedInstance;
