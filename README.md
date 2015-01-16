@@ -3,33 +3,10 @@ iOS Ingress
 
 iOS Ingress is a fully playable iOS port of the popular game Ingress created by NianticLabs@Google. 
 
-This port works on both jailbroken & non-jailbroken devices.
-
 Requirements
 --------
 - iOS 6 or above.
-- GPS must be enabled.
-
-Download
---------
-
-- 1.1.3 (07/19/2013)
-- **Change your iPhone's date to 07/15 before installing and after change it back**
-- [Download ipa](http://www.ios-ingress.com/downloads/Ingress.ipa)
-- [Install app via OTA](http://tinyurl.com/iosingressota) (visit this link from Safari on your iDevice)
-- Availabile at Cydia repo http://cydia.angelxwind.net/
-
-OTA Install will work on jailbroken & non-jailbroken devices.
-
-Website
--------
-
-[http://ios-ingress.com/](http://ios-ingress.com/)
-
-Issues Tracker
---------------
-
-[![Waffle](http://badge.waffle.io/alex-alex/iOS-Ingress.png)](http://www.waffle.io/alex-alex/iOS-Ingress)
+- GPS
 
 Support
 -------
@@ -39,21 +16,6 @@ If you enjoy this software, please consider making a small donation to help with
 [![Donate](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=6HKVU78GCECL2&lc=US&item_name=iOS%20Ingress&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
 
 [![Flattr](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/thing/1350940/iOS-Ingress)
-
-For Chinese Users
--------
-
-- Non-Jailbroken Download
-
-    - [中国未越狱用户点此下载](http://angelxwind.net/jeanny710/ingress/)
-
-- Google Software Hosts
-
-    - [中国用户Hosts点此下载](http://angelxwind.net/jeanny710/ingress/hosts.zip)
-    - 请将文件解压后置于/etc
-    - 如果您已经使用了其他hosts，请在MobileTerminal中输入
-    - `cd ../../etc`
-    - `cat /var/mobile/Documents/hosts >> hosts`
 
 Videos
 ------
